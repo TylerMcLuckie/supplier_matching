@@ -2,17 +2,13 @@ import pandas as pd
 import re
 from rapidfuzz import process, fuzz
 
-# =====================================================
 # FILE NAMES
-# =====================================================
 
 PRINTIQ_FILE = "printiq_suppliers.xlsx"
 XERO_FILE = "xero_suppliers.xlsx"
 OUTPUT_FILE = "acume_supplier_matching.xlsx"
 
-# =====================================================
 # LOAD FILES
-# =====================================================
 
 print("Loading Excel files...")
 
@@ -29,9 +25,7 @@ print(xero_df.columns.tolist())
 printiq_df.columns = printiq_df.columns.str.strip().str.replace("\ufeff", "")
 xero_df.columns = xero_df.columns.str.strip().str.replace("\ufeff", "")
 
-# =====================================================
 # COLUMN MAPPING
-# =====================================================
 
 PRINTIQ_CODE_COL = "Code"
 PRINTIQ_NAME_COL = "Name"
@@ -39,9 +33,7 @@ PRINTIQ_NAME_COL = "Name"
 XERO_ACCOUNT_COL = "AccountNumber"
 XERO_NAME_COL = "ContactName"
 
-# =====================================================
 # CLEANING FUNCTIONS
-# =====================================================
 
 def clean_text(value):
     if pd.isna(value):
@@ -74,9 +66,7 @@ def normalize_company_name(name):
 
     return " ".join(name.split())
 
-# =====================================================
 # CLEAN DATA
-# =====================================================
 
 print("Cleaning supplier data...")
 
@@ -84,10 +74,7 @@ printiq_df["MATCH_CODE"] = printiq_df[PRINTIQ_CODE_COL].apply(clean_text)
 xero_df["MATCH_CODE"] = xero_df[XERO_ACCOUNT_COL].apply(clean_text)
 
 
-
-# =====================================================
 # EXACT MATCH (BY CODE)
-# =====================================================
 
 print("Performing exact matches...")
 
@@ -107,9 +94,7 @@ unmatched = matched_df[
     matched_df[XERO_ACCOUNT_COL].isna()
 ].copy()
 
-# =====================================================
 # FUZZY MATCH (BY NAME)
-# =====================================================
 
 print("Finding fuzzy matches...")
 
@@ -154,9 +139,7 @@ for _, row in unmatched.iterrows():
 
 fuzzy_df = pd.DataFrame(fuzzy_results)
 
-# =====================================================
 # SORT RESULTS
-# =====================================================
 
 print("Sorting results...")
 
@@ -166,9 +149,7 @@ unmatched = unmatched.sort_values(by=[PRINTIQ_NAME_COL])
 if not fuzzy_df.empty:
     fuzzy_df = fuzzy_df.sort_values(by=["Match Score"], ascending=False)
 
-# =====================================================
 # EXPORT TO EXCEL
-# =====================================================
 
 print("Exporting results...")
 
@@ -178,12 +159,11 @@ with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
     unmatched.to_excel(writer, sheet_name="Unmatched", index=False)
     fuzzy_df.to_excel(writer, sheet_name="Fuzzy Suggestions", index=False)
 
-# =====================================================
 # DONE
-# =====================================================
 
 print("")
 print("======================================")
 print("ACUME SUPPLIER MATCH COMPLETE")
 print(f"Output file: {OUTPUT_FILE}")
 print("======================================")
+
