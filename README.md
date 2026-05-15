@@ -258,6 +258,6 @@ Potential enhancements:
 
 ---
 
-# Author
+## Author
 
-Internal automation tool for supplier matching workflows.
+[Tyler Mc Luckie](https://tylermcluckie.github.io) · [ntmdigital.co](https://ntmdigital.co)
